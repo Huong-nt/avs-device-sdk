@@ -27,6 +27,7 @@
 #include <AVSCommon/SDKInterfaces/SpeakerManagerObserverInterface.h>
 #include <AVSCommon/Utils/Threading/Executor.h>
 #include <CBLAuthDelegate/CBLAuthRequesterInterface.h>
+#include "SampleApp/MQTTClient.h"
 
 namespace alexaClientSDK {
 namespace sampleApp {

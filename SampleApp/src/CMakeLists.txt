@@ -1,3 +1,9 @@
+find_library(libmosquitto NAMES libmosquitto.so)
+find_library(libmosquittopp NAMES libmosquittopp.so)
+
+message("${libmosquitto}")
+message("${libmosquittopp}")
+
 set(SampleApp_SOURCES)
 list(APPEND SampleApp_SOURCES 
     ConnectionObserver.cpp
@@ -10,6 +16,7 @@ list(APPEND SampleApp_SOURCES
     UserInputManager.cpp
     SampleApplication.cpp
     SampleEqualizerModeController.cpp
+    MQTTClient.cpp
     main.cpp)
 
 if (PORTAUDIO)
@@ -43,7 +50,9 @@ target_link_libraries(SampleApp
     SQLiteStorage
     ESP
     EqualizerImplementations
-    "${PORTAUDIO_LIB_PATH}")
+    "${PORTAUDIO_LIB_PATH}"
+    ${libmosquittopp} 
+    pthread)
 
 if (ANDROID)
     target_include_directories(SampleApp PUBLIC "${AndroidUtilities}/include")

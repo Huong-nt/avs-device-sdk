@@ -16,6 +16,7 @@
 #include "SampleApp/ConsoleReader.h"
 #include "SampleApp/SampleApplication.h"
 #include "SampleApp/SampleApplicationReturnCodes.h"
+#include "SampleApp/MQTTClient.h"
 
 #include <cstdlib>
 #include <string>
@@ -51,12 +52,16 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> configFiles;
     std::string pathToKWDInputFolder;
     std::string logLevel;
+    
+    mosqpp::lib_init();
+    MQTTClient::Instance()->init("hub", "127.0.0.1", 1883);
 
     if (usesOptStyleArgs(argc, argv)) {
         for (int i = 1; i < argc; i++) {
             if (strcmp(argv[i], "-C") == 0) {
                 if (i + 1 == argc) {
                     ConsolePrinter::simplePrint("No config specified for -C option");
+                    mosqpp::lib_cleanup();
                     return SampleAppReturnCode::ERROR;
                 }
                 configFiles.push_back(std::string(argv[++i]));
@@ -64,12 +69,14 @@ int main(int argc, char* argv[]) {
             } else if (strcmp(argv[i], "-K") == 0) {
                 if (i + 1 == argc) {
                     ConsolePrinter::simplePrint("No wakeword input specified for -K option");
+                    mosqpp::lib_cleanup();
                     return SampleAppReturnCode::ERROR;
                 }
                 pathToKWDInputFolder = std::string(argv[++i]);
             } else if (strcmp(argv[i], "-L") == 0) {
                 if (i + 1 == argc) {
                     ConsolePrinter::simplePrint("No debugLevel specified for -L option");
+                    mosqpp::lib_cleanup();
                     return SampleAppReturnCode::ERROR;
                 }
                 logLevel = std::string(argv[++i]);
@@ -77,6 +84,7 @@ int main(int argc, char* argv[]) {
                 ConsolePrinter::simplePrint(
                     "USAGE: " + std::string(argv[0]) + " -C <config1.json> -C <config2.json> ... -C <configN.json> " +
                     " -K <path_to_inputs_folder> -L <log_level>");
+                mosqpp::lib_cleanup();
                 return SampleAppReturnCode::ERROR;
             }
         }
@@ -86,6 +94,7 @@ int main(int argc, char* argv[]) {
             ConsolePrinter::simplePrint(
                 "USAGE: " + std::string(argv[0]) +
                 " <path_to_AlexaClientSDKConfig.json> <path_to_inputs_folder> [log_level]");
+            mosqpp::lib_cleanup();
             return SampleAppReturnCode::ERROR;
         } else {
             pathToKWDInputFolder = std::string(argv[2]);
@@ -97,6 +106,7 @@ int main(int argc, char* argv[]) {
         if (argc < 2) {
             ConsolePrinter::simplePrint(
                 "USAGE: " + std::string(argv[0]) + " <path_to_AlexaClientSDKConfig.json> [log_level]");
+            mosqpp::lib_cleanup();
             return SampleAppReturnCode::ERROR;
         }
         if (3 == argc) {
@@ -117,11 +127,13 @@ int main(int argc, char* argv[]) {
         sampleApplication = SampleApplication::create(consoleReader, configFiles, pathToKWDInputFolder, logLevel);
         if (!sampleApplication) {
             ConsolePrinter::simplePrint("Failed to create to SampleApplication!");
+            mosqpp::lib_cleanup();
             return SampleAppReturnCode::ERROR;
         }
         returnCode = sampleApplication->run();
         sampleApplication.reset();
     } while (SampleAppReturnCode::RESTART == returnCode);
-
+    
+    //mosqpp::lib_cleanup();
     return returnCode;
 }

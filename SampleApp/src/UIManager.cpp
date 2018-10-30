@@ -463,21 +463,36 @@ void UIManager::printState() {
     } else if (m_connectionStatus == avsCommon::sdkInterfaces::ConnectionStatusObserverInterface::Status::PENDING) {
         ConsolePrinter::prettyPrint("Connecting...");
     } else if (m_connectionStatus == avsCommon::sdkInterfaces::ConnectionStatusObserverInterface::Status::CONNECTED) {
+        char fomat_mes[] = "{\"action\": \"%s\"}";
+        char *buf_mes = (char*)malloc(30 * sizeof(char));
+
         switch (m_dialogState) {
             case DialogUXState::IDLE:
                 ConsolePrinter::prettyPrint("Alexa is currently idle!");
                 return;
             case DialogUXState::LISTENING:
                 ConsolePrinter::prettyPrint("Listening...");
+                // add MQTT client here 
+                sprintf(buf_mes, fomat_mes, "LISTEN");
+                MQTTClient::Instance()->publish(NULL, "avs/led/control", strlen(buf_mes), buf_mes);
                 return;
             case DialogUXState::EXPECTING:
                 ConsolePrinter::prettyPrint("Expecting...");
+                // add MQTT client here 
+                sprintf(buf_mes, fomat_mes, "LISTEN");
+                MQTTClient::Instance()->publish(NULL, "avs/led/control", strlen(buf_mes), buf_mes);
                 return;
             case DialogUXState::THINKING:
                 ConsolePrinter::prettyPrint("Thinking...");
+                // add MQTT client here
+                sprintf(buf_mes, fomat_mes, "THINK");
+                MQTTClient::Instance()->publish(NULL, "avs/led/control", strlen(buf_mes), buf_mes);
                 return;
             case DialogUXState::SPEAKING:
                 ConsolePrinter::prettyPrint("Speaking...");
+                // add MQTT client here
+                sprintf(buf_mes, fomat_mes, "SPEAK");
+                MQTTClient::Instance()->publish(NULL, "avs/led/control", strlen(buf_mes), buf_mes);
                 return;
             /*
              * This is an intermediate state after a SPEAK directive is completed. In the case of a speech burst the
@@ -485,6 +500,8 @@ void UIManager::printState() {
              * nothing for this state.
              */
             case DialogUXState::FINISHED:
+                sprintf(buf_mes, fomat_mes, "OFF");
+                MQTTClient::Instance()->publish(NULL, "avs/led/control", strlen(buf_mes), buf_mes);
                 return;
         }
     }
