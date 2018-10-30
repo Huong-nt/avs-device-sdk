@@ -469,6 +469,8 @@ void UIManager::printState() {
         switch (m_dialogState) {
             case DialogUXState::IDLE:
                 ConsolePrinter::prettyPrint("Alexa is currently idle!");
+                sprintf(buf_mes, fomat_mes, "OFF");
+                MQTTClient::Instance()->publish(NULL, "avs/led/control", strlen(buf_mes), buf_mes);
                 return;
             case DialogUXState::LISTENING:
                 ConsolePrinter::prettyPrint("Listening...");
