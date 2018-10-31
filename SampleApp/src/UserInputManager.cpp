@@ -112,8 +112,15 @@ UserInputManager::UserInputManager(
         m_restart{false} {
 }
 
+int tick = 0;
 bool UserInputManager::readConsoleInput(char* input) {
     while (input && !m_restart) {
+        int current = digitalRead(TAP_PIN);
+        if(!tick && (current == LOW)) tick = 1;
+        if(tick && (current == HIGH)) {
+            tick = 0;
+            m_interactionManager->tap();
+        }
         if (m_consoleReader->read(READ_CONSOLE_TIMEOUT, input)) {
             return true;
         }
@@ -123,6 +130,10 @@ bool UserInputManager::readConsoleInput(char* input) {
 
 SampleAppReturnCode UserInputManager::run() {
     bool userTriggeredLogout = false;
+    
+    wiringPiSetup();
+    pinMode(TAP_PIN, INPUT);
+
     m_interactionManager->begin();
     while (true) {
         char x;

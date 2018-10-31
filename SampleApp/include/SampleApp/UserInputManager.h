@@ -24,10 +24,11 @@
 #include "ConsoleReader.h"
 #include "InteractionManager.h"
 #include "SampleApplicationReturnCodes.h"
+#include <wiringPi.h>
 
 namespace alexaClientSDK {
 namespace sampleApp {
-
+#define TAP_PIN 0
 /// Observes user input from the console and notifies the interaction manager of the user's intentions.
 class UserInputManager
         : public avsCommon::sdkInterfaces::AuthObserverInterface

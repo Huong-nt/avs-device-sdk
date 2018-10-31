@@ -52,7 +52,8 @@ target_link_libraries(SampleApp
     EqualizerImplementations
     "${PORTAUDIO_LIB_PATH}"
     ${libmosquittopp} 
-    pthread)
+    pthread
+    wiringPi)
 
 if (ANDROID)
     target_include_directories(SampleApp PUBLIC "${AndroidUtilities}/include")
